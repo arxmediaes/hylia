@@ -13,13 +13,6 @@ const dbName=project+'-github';
 let db=(await cf('/d1/database?per_page=100')).find(d=>d.name===dbName);
 if(!db)db=await cf('/d1/database',{method:'POST',body:JSON.stringify({name:dbName})});
 const config={name:project+'-api',main:'dist/worker.js',compatibility_date:'2026-10-23',compatibility_flags:['nodejs_compat'],d1_databases:[{binding:'DB',database_name:dbName,database_id:db.uuid,migrations_dir:'migrations'}],vars:{APP_ORIGIN:process.env.APP_ORIGIN}};
-if(project==='hylia'){
- const bucket='hylia-github-images';let existing=false;
- const r=await fetch('https://api.cloudflare.com/client/v4/accounts/'+account+'/r2/buckets/'+bucket,{headers:{Authorization:'Bearer '+process.env.CLOUDFLARE_API_TOKEN}});
- if(r.ok)existing=true;else if(r.status!==404)throw Error('No se pudo consultar R2. Habilita R2 y concede permisos al token.');
- if(!existing)await cf('/r2/buckets',{method:'POST',body:JSON.stringify({name:bucket})});
- config.r2_buckets=[{binding:'BUCKET',bucket_name:bucket}];
-}
 await mkdir('worker',{recursive:true});await writeFile('worker/wrangler.generated.json',JSON.stringify(config,null,2));
 const cli='node_modules/wrangler/bin/wrangler.js';
 function run(args,input){const r=spawnSync(process.execPath,[cli,...args],{stdio:input?['pipe','inherit','inherit']:'inherit',input});if(r.error)throw r.error;if(r.status!==0)throw Error('Falló Wrangler. Revisa el registro de Actions.');}

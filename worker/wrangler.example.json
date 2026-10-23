@@ -13,12 +13,6 @@
       "migrations_dir": "migrations"
     }
   ],
-  "r2_buckets": [
-    {
-      "binding": "BUCKET",
-      "bucket_name": "hylia-github-images"
-    }
-  ],
   "vars": {
     "APP_ORIGIN": "https://YOUR_USER.github.io"
   }

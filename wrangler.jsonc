@@ -21,12 +21,6 @@
       "migrations_dir": "worker/migrations"
     }
   ],
-  "r2_buckets": [
-    {
-      "binding": "BUCKET",
-      "bucket_name": "hylia-github-images"
-    }
-  ],
   "observability": {
     "enabled": true
   }

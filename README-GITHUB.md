@@ -24,7 +24,7 @@ Crea en Settings → Secrets and variables → Actions estos secretos:
 
 | Secreto | Contenido |
 |---|---|
-| CLOUDFLARE_API_TOKEN | Token para editar Workers, secretos de Workers y D1, además de R2 en tu cuenta |
+| CLOUDFLARE_API_TOKEN | Token para editar Workers, secretos de Workers y D1 en tu cuenta |
 | CLOUDFLARE_ACCOUNT_ID | ID de tu cuenta Cloudflare |
 | APP_USERS_JSON | Lista JSON de usuarios privados, cada uno con username, name, password e id estable |
 | APP_SESSION_SECRET | Clave aleatoria de al menos 32 caracteres; conservarla entre despliegues |
@@ -40,7 +40,7 @@ Configura la variable de Actions `APP_ORIGIN` con el origen de GitHub Pages, por
 
 Ejecuta Actions → **Publicar API en Cloudflare**. El flujo crea o reutiliza la base D1, aplica las migraciones, publica el Worker y guarda sus secretos. El registro muestra la URL workers.dev. Después configura `VITE_API_BASE` con esa URL y publica la interfaz. El token Cloudflare queda en secretos y no se empaqueta en el frontend.
 
-Para Hylia debes habilitar R2 en la cuenta antes del despliegue. Si el panel requiere contratar o aceptar condiciones, completa esa autorización primero.
+Hylia guarda las imágenes en D1, con un máximo de 1 MB por imagen. No requiere activar R2.
 
 ## Desarrollo
 
@@ -50,4 +50,4 @@ Node >=22.13. Instala con `npm install`, ejecuta `npm test` y `npm run build`. `
 
 El ZIP contiene el código y los planes versionados, pero no copia la base activa ni archivos privados del Site original. Las cuentas, conexiones cifradas, historial y archivos de producción requieren una migración independiente; no se ha alterado su origen. No reutilices un identificador de usuario para otra persona.
 
-El acceso al espacio ARX conserva la entrada de Diego/Ricardo y su clave de equipo configurada en ARX_PASSWORD. Tras entrar, se importa el plan ARX/WOW versionado una sola vez. El calendario, las tareas, dependencias, tablero, taller creativo, referencias con imágenes y enlaces de colaboración usan D1/R2. Cada colaborador debe estar definido en APP_USERS_JSON y aceptar la invitación o entrar en ARX. Los enlaces de solo lectura usan `?share=TOKEN`, compatibles con Pages; su revocación se verifica en la API.
+El acceso al espacio ARX conserva la entrada de Diego/Ricardo y su clave de equipo configurada en ARX_PASSWORD. Tras entrar, se importa el plan ARX/WOW versionado una sola vez. El calendario, las tareas, dependencias, tablero, taller creativo, referencias con imágenes y enlaces de colaboración usan D1. Cada colaborador debe estar definido en APP_USERS_JSON y aceptar la invitación o entrar en ARX. Los enlaces de solo lectura usan `?share=TOKEN`, compatibles con Pages; su revocación se verifica en la API.

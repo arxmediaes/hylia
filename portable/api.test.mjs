@@ -8,7 +8,7 @@ const {Miniflare}=mfModule;
 const name=JSON.parse(await readFile('package.json','utf8')).name.startsWith('hylia')?'hylia':'hyrule';
 const password='local-smoke-test-strong-password';
 test(name+': authenticated API, persistence, scopes, CORS and original handlers',async()=>{
- const mf=new Miniflare({modules:true,scriptPath:'worker/dist/worker.js',compatibilityDate:'2026-05-01',compatibilityFlags:['nodejs_compat'],d1Databases:['DB'],r2Buckets:['BUCKET'],bindings:{APP_ORIGIN:'https://example.github.io',APP_USERS_JSON:JSON.stringify([{username:'ricardo',name:'Ricardo',password},{username:'other',name:'Other',password}]),APP_SESSION_SECRET:'local-session-secret-used-only-in-smoke-tests-123456',PULSE_ENCRYPTION_KEY:'local-cipher-secret-used-only-in-smoke-tests-123456',ARX_PASSWORD:password}});
+ const mf=new Miniflare({modules:true,scriptPath:'worker/dist/worker.js',compatibilityDate:'2026-05-01',compatibilityFlags:['nodejs_compat'],d1Databases:['DB'],bindings:{APP_ORIGIN:'https://example.github.io',APP_USERS_JSON:JSON.stringify([{username:'ricardo',name:'Ricardo',password},{username:'other',name:'Other',password}]),APP_SESSION_SECRET:'local-session-secret-used-only-in-smoke-tests-123456',PULSE_ENCRYPTION_KEY:'local-cipher-secret-used-only-in-smoke-tests-123456',ARX_PASSWORD:password}});
  try{
   const db=await mf.getD1Database('DB');
   for(const file of (await readdir('worker/migrations')).filter(n=>n.endsWith('.sql')).sort()){
@@ -42,6 +42,27 @@ test(name+': authenticated API, persistence, scopes, CORS and original handlers'
    const event=(await (await call('/api/data?space=arx',{token})).json()).events.find(e=>e.title==='Prueba local');assert.ok(event);
    const update=await call('/api/data',{token,method:'POST',body:{...event,action:'event',space:'arx',title:'Actualizada'}});assert.equal(update.status,200);
    const stale=await call('/api/data',{token,method:'POST',body:{...event,action:'event',space:'arx',title:'No sobrescribir'}});assert.equal(stale.status,409);
+   // D1-only image persistence and access control (no R2 binding).
+   const bytes=Uint8Array.from([137,80,78,71,13,10,26,10,0,1,2,3]);
+   const upload=async(file,uploadToken=token)=>{const form=new FormData();form.append('file',file);const request=new Request('https://api.example.test/api/image?space=arx',{method:'POST',headers:{Origin:'https://example.github.io',Authorization:'Bearer '+uploadToken},body:form});return mf.dispatchFetch(request.url,{method:'POST',headers:request.headers,body:await request.arrayBuffer()});};
+   const uploaded=await upload(new Blob([bytes],{type:'image/png'}));assert.equal(uploaded.status,200,await uploaded.clone().text());
+   const image=(await uploaded.json()).url;
+   const downloaded=await call(image,{token});assert.equal(downloaded.status,200);assert.equal(downloaded.headers.get('Content-Type'),'image/png');assert.deepEqual(new Uint8Array(await downloaded.arrayBuffer()),bytes);
+   assert.equal((await call(image,{token:other.token})).status,403);
+   assert.equal((await call(image)).status,401);
+   assert.equal((await call(image+'&image_token='+encodeURIComponent(session.imageToken))).status,200);
+   assert.equal((await upload(new Blob([bytes],{type:'image/png'}),other.token)).status,403);
+   assert.equal((await upload(new Blob(['bad'],{type:'text/plain'}))).status,400);
+   assert.equal((await upload(new Blob([new Uint8Array(1024*1024+1)],{type:'image/png'}))).status,400);
+   const latest=(await (await call('/api/data?space=arx',{token})).json()).events.find(e=>e.id===event.id);
+   assert.equal((await call('/api/data',{token,method:'POST',body:{...latest,action:'event',space:'arx',image}})).status,200);
+   const imageShare=await (await call('/api/studio',{token,method:'POST',body:{action:'link',space:'arx',kind:'read',calendar:'arx-general'}})).json();
+   const sharedImage='/api/shared-image?token='+imageShare.id+'&key='+new URL(image,'https://api.example.test').searchParams.get('key');
+   const sharedDownload=await call(sharedImage);assert.equal(sharedDownload.status,200);assert.deepEqual(new Uint8Array(await sharedDownload.arrayBuffer()),bytes);
+   assert.equal((await call(sharedImage.replace('arx/','other/'))).status,404);
+   await call('/api/studio',{token,method:'POST',body:{action:'revoke',space:'arx',id:imageShare.id}});
+   assert.equal((await call(sharedImage)).status,404);
+
   }else{
    const data=await call('/api/state',{token});assert.equal(data.status,200);
    const save=await call('/api/state',{token,method:'POST',body:{state:{trades:[],experiments:[],marker:'portable'},revision:0}});assert.equal(save.status,200);
