@@ -1,0 +1,8 @@
+node_modules/
+.env*
+.dev.vars*
+worker/dist/
+worker/wrangler.generated.json
+*.tsbuildinfo
+.wrangler/
+*.log
