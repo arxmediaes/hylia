@@ -1,0 +1,12 @@
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import {Access} from '../portable/access';
+import {installApiTransport} from '../portable/client';
+import '../app/globals.css';
+import '../portable/access.css';
+import App from '../app/ui';
+import {SharedCalendar} from '../portable/shared-view';
+installApiTransport();
+document.body.classList.add('hylia-access');
+const token=new URLSearchParams(location.search).get('share');
+createRoot(document.getElementById('root')!).render(token?<SharedCalendar token={token}/>:<Access name="hylia.">{user=><App user={user.displayName}/>}</Access>);

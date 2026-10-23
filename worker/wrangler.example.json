@@ -1,0 +1,25 @@
+{
+  "name": "hylia-api",
+  "main": "dist/worker.js",
+  "compatibility_date": "2026-10-23",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hylia-github",
+      "database_id": "REPLACE_WITH_DATABASE_ID",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "hylia-github-images"
+    }
+  ],
+  "vars": {
+    "APP_ORIGIN": "https://YOUR_USER.github.io"
+  }
+}

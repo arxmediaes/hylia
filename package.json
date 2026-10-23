@@ -1,0 +1,35 @@
+{
+  "name": "hylia-github-pages",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build && node scripts/build-worker.mjs",
+    "build:pages": "vite build",
+    "build:worker": "node scripts/build-worker.mjs",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node scripts/build-worker.mjs && node --test portable/*.test.mjs",
+    "deploy:api": "node scripts/deploy-api.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "1.31.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "drizzle-orm": "0.45.2"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "typescript": "5.9.3",
+    "vite": "8.0.13",
+    "esbuild": "0.28.0",
+    "wrangler": "4.92.0",
+    "miniflare": "4.20260515.0"
+  }
+}
