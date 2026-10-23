@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1792165572343,
+      "tag": "0000_ancient_bill_hollister",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1792193685565,
+      "tag": "0001_sturdy_cerise",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792194715152,
+      "tag": "0002_equal_black_knight",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1792195648168,
+      "tag": "0003_thick_blacklash",
+      "breakpoints": true
+    }
+  ]
+}
