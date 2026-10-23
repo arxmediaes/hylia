@@ -13,7 +13,8 @@
     "build:worker": "node scripts/build-worker.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "test": "node scripts/build-worker.mjs && node --test portable/*.test.mjs",
-    "deploy:api": "node scripts/deploy-api.mjs"
+    "deploy:api": "node scripts/deploy-api.mjs",
+    "deploy:cloudflare": "wrangler d1 migrations apply DB --remote --config wrangler.jsonc && wrangler deploy --config wrangler.jsonc"
   },
   "dependencies": {
     "lucide-react": "1.31.0",
